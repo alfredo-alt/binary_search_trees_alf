@@ -66,6 +66,69 @@ class Tree {
 
     return node;
   }
+
+  /**
+   * Checks whether `value` exists anywhere in the tree, by walking down
+   * from the root -- at each node, the BST property tells us which
+   * single branch could possibly contain it, so we never need to check
+   * the whole tree (O(log n) for a balanced tree, not O(n)).
+   * @param {number} value
+   * @returns {boolean} true if `value` is found, false otherwise.
+   */
+  includes(value) {
+    let current = this.root;
+
+    while (current) {
+      if (value === current.data) {
+        return true;
+      }
+      current = value < current.data ? current.left : current.right;
+    }
+
+    return false;
+  }
+
+  /**
+   * Inserts a new node containing `value`, preserving the BST property
+   * (everything to a node's left is smaller, everything to its right
+   * is larger). Walks down from the root -- same idea as includes(),
+   * following the single branch where `value` belongs -- until it finds
+   * the empty spot (null) where the new node should attach.
+   *
+   * If `value` already exists in the tree, this does nothing (no
+   * duplicate node is created).
+   * @param {number} value
+   */
+  insert(value) {
+    const newNode = new Node(value);
+
+    if (!this.root) {
+      this.root = newNode;
+      return;
+    }
+
+    let current = this.root;
+    while (true) {
+      if (value === current.data) {
+        // Already in the tree -- do nothing, per the assignment.
+        return;
+      }
+
+      if (value < current.data) {
+        if (!current.left) {
+          current.left = newNode;
+          return;
+        }
+        current = current.left;
+      } else {
+        if (!current.right) {
+          current.right = newNode;
+          return;
+        }
+        current = current.right;
+      }
+    }
+  }
 }
 
 export { Node, Tree };
