@@ -1,0 +1,43 @@
+{
+  "name": "odin-project-template",
+  "version": "1.0.0",
+  "description": "Base template for The Odin Project exercises (ESLint + Prettier + Webpack + Jest configured).",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "jest --verbose",
+    "test:watch": "jest --watch --verbose",
+    "test:coverage": "jest --coverage --verbose",
+    "build": "webpack --config webpack.prod.js",
+    "dev": "webpack serve --open --config webpack.dev.js",
+    "deploy": "git subtree push --prefix dist origin gh-pages",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write ."
+  },
+  "author": "Alfredo",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/preset-env": "^7.29.7",
+    "@eslint/css": "^1.4.0",
+    "@eslint/js": "^10.0.1",
+    "@eslint/json": "^2.0.1",
+    "@eslint/markdown": "^8.0.3",
+    "css-loader": "^7.1.4",
+    "dotenv-webpack": "^9.0.0",
+    "eslint": "^10.7.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.7.0",
+    "html-loader": "^5.1.0",
+    "html-webpack-plugin": "^5.6.7",
+    "jest": "^30.4.2",
+    "prettier": "3.9.5",
+    "style-loader": "^4.0.0",
+    "webpack": "^5.108.4",
+    "webpack-cli": "^7.2.1",
+    "webpack-dev-server": "^6.0.0",
+    "webpack-merge": "^6.0.1"
+  },
+  "allowScripts": {
+    "unrs-resolver@1.12.2": true
+  }
+}
