@@ -458,3 +458,87 @@ describe('height functionality', () => {
     expect(tree.height(5)).toBe(0);
   });
 });
+
+describe('depth functionality', () => {
+  it('returns undefined for a value not in the tree', () => {
+    const tree = new Tree([1, 2, 3]);
+    expect(tree.depth(999)).toBeUndefined();
+  });
+
+  it('returns undefined when called on an empty tree', () => {
+    const tree = new Tree([]);
+    expect(tree.depth(5)).toBeUndefined();
+  });
+
+  it('returns 0 for the root', () => {
+    const tree = new Tree([1, 2, 3, 4, 5, 6, 7]);
+    expect(tree.depth(4)).toBe(0);
+  });
+
+  it('returns the correct depth for nodes at deeper levels', () => {
+    // Balanced tree from [1..7]: root 4, level 1 -> 2, 6, level 2 -> 1, 3, 5, 7.
+    const tree = new Tree([1, 2, 3, 4, 5, 6, 7]);
+    expect(tree.depth(2)).toBe(1);
+    expect(tree.depth(6)).toBe(1);
+    expect(tree.depth(1)).toBe(2);
+    expect(tree.depth(7)).toBe(2);
+  });
+
+  it('is consistent with height(): depth(root) + height(leaf) matches path length', () => {
+    const tree = new Tree([1, 2, 3, 4, 5, 6, 7]);
+    // From root (4) to leaf (1): depth(1) should equal 2 edges.
+    expect(tree.depth(1)).toBe(2);
+  });
+});
+
+describe('isBalanced functionality', () => {
+  it('returns true for an empty tree', () => {
+    const tree = new Tree([]);
+    expect(tree.isBalanced()).toBe(true);
+  });
+
+  it('returns true for a single-node tree', () => {
+    const tree = new Tree([1]);
+    expect(tree.isBalanced()).toBe(true);
+  });
+
+  it('returns true for a tree built with buildTree() (always balanced)', () => {
+    const tree = new Tree([1, 7, 4, 23, 8, 9, 3, 5, 67, 6345, 324]);
+    expect(tree.isBalanced()).toBe(true);
+  });
+
+  it('returns false for an unbalanced chain built via repeated insert()', () => {
+    const tree = new Tree([1]);
+    tree.insert(2);
+    tree.insert(3);
+    tree.insert(4);
+    tree.insert(5); // straight chain 1->2->3->4->5, clearly unbalanced
+    expect(tree.isBalanced()).toBe(false);
+  });
+
+  it('catches an imbalance buried deep in the tree, even when the root itself looks balanced (the pitfall the assignment warns about)', () => {
+    // Build a deliberately unbalanced left branch (height 2, right side empty):
+    //   nodeA (height 2)
+    //   └── nodeB (height 1)
+    //       └── nodeC (leaf, height 0)
+    const nodeC = new Node(1);
+    const nodeB = new Node(2, nodeC, null);
+    const nodeA = new Node(3, nodeB, null);
+
+    // L is unbalanced on its own: left height 2, right height -1 (null) -> diff 3.
+    const nodeL = new Node(20, nodeA, null);
+
+    // A perfectly balanced subtree of height 3 (15 nodes), used as the
+    // root's right side so the ROOT-level check (left vs right height)
+    // comes out equal (3 vs 3) -- "looks balanced" if you only check the root.
+    const balancedRightSubtree = new Tree(
+      Array.from({ length: 15 }, (_, i) => 100 + i),
+    ).root;
+
+    const tree = new Tree([]); // start empty, then wire the root manually
+    tree.root = new Node(50, nodeL, balancedRightSubtree);
+
+    // Root-level check alone (heights 3 vs 3) would wrongly say "balanced".
+    expect(tree.isBalanced()).toBe(false);
+  });
+});

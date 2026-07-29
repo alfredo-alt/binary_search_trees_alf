@@ -361,10 +361,51 @@ class Tree {
         return depth;
       }
       current = value < current.data ? current.left : current.right;
-      depth++;
+      depth += 1;
     }
 
     return undefined;
+  }
+
+  /**
+   * Checks whether the ENTIRE tree is balanced: for every node (not
+   * just the root), the height difference between its left and right
+   * subtrees must be at most 1.
+   *
+   * A common mistake is only checking the root's two children -- that
+   * misses imbalances buried deeper in the tree. To check every node
+   * without paying for a separate height() call at each one (which
+   * would make this O(n^2)), this computes each node's height and
+   * checks its balance in the SAME single recursive pass: as soon as
+   * any subtree is found unbalanced, `null` is returned instead of a
+   * height, and that `null` propagates straight up through every
+   * ancestor call without doing any more work.
+   * @returns {boolean} true if every node in the tree is balanced.
+   */
+  isBalanced() {
+    const checkHeight = (node) => {
+      if (!node) {
+        return -1; // same convention as height(): a missing node has height -1.
+      }
+
+      const leftHeight = checkHeight(node.left);
+      if (leftHeight === null) {
+        return null; // an imbalance was already found further down -- bail out.
+      }
+
+      const rightHeight = checkHeight(node.right);
+      if (rightHeight === null) {
+        return null;
+      }
+
+      if (Math.abs(leftHeight - rightHeight) > 1) {
+        return null; // THIS node is unbalanced -- signal it upward.
+      }
+
+      return 1 + Math.max(leftHeight, rightHeight);
+    };
+
+    return checkHeight(this.root) !== null;
   }
 }
 
