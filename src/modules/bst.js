@@ -21,7 +21,7 @@ class Tree {
    * @param {number[]} array - initial values to build the tree from.
    */
   constructor(array) {
-    this.root = this.#prepareAndBuildTree(array);
+    this.root = this.#buildTree(array);
   }
 
   /**
@@ -32,7 +32,7 @@ class Tree {
    * @param {number[]} array
    * @returns {Node|null} the level-0 root node.
    */
-  #prepareAndBuildTree(array) {
+  #buildTree(array) {
     const sortedUniqueValues = [...new Set(array)].sort((a, b) => a - b);
     return this.#buildBalancedTree(
       sortedUniqueValues,
@@ -197,6 +197,43 @@ class Tree {
       parent.left = child;
     } else {
       parent.right = child;
+    }
+  }
+
+  /**
+   * Traverses the tree breadth-first (level by level, left to right
+   * within each level) and calls `callback` with each node's VALUE
+   * (not the node itself) -- similar to Array.prototype.forEach().
+   *
+   * Uses an array as a queue: start with the root queued up, then
+   * repeatedly take the front of the queue, visit it, and queue up its
+   * children (left before right) for later. Nodes get visited in the
+   * exact order they were queued, which is what produces level-by-level
+   * order instead of diving deep into one branch first.
+   * @param {function(*): void} callback
+   * @throws {Error} if `callback` isn't a function.
+   */
+  levelOrderForEach(callback) {
+    if (typeof callback !== 'function') {
+      throw new Error('levelOrderForEach() requires a callback function.');
+    }
+
+    if (!this.root) {
+      return;
+    }
+
+    const queue = [this.root];
+
+    while (queue.length > 0) {
+      const current = queue.shift();
+      callback(current.data);
+
+      if (current.left) {
+        queue.push(current.left);
+      }
+      if (current.right) {
+        queue.push(current.right);
+      }
     }
   }
 }

@@ -254,3 +254,52 @@ describe('deleteItem functionality', () => {
     expect(tree.root).toBeNull();
   });
 });
+
+describe('levelOrderForEach functionality', () => {
+  it('throws an Error when no callback is given', () => {
+    const tree = new Tree([1, 2, 3]);
+    expect(() => tree.levelOrderForEach()).toThrow(Error);
+  });
+
+  it('throws an Error when the argument is not a function', () => {
+    const tree = new Tree([1, 2, 3]);
+    expect(() => tree.levelOrderForEach('not a function')).toThrow(Error);
+  });
+
+  it('does not call the callback on an empty tree', () => {
+    const tree = new Tree([]);
+    const callback = jest.fn();
+    tree.levelOrderForEach(callback);
+    expect(callback).not.toHaveBeenCalled();
+  });
+
+  it('visits nodes level by level, left to right within each level', () => {
+    // Balanced tree from [1..7]: level 0 -> 4, level 1 -> 2, 6, level 2 -> 1, 3, 5, 7.
+    const tree = new Tree([1, 2, 3, 4, 5, 6, 7]);
+
+    const visited = [];
+    tree.levelOrderForEach((value) => visited.push(value));
+
+    expect(visited).toEqual([4, 2, 6, 1, 3, 5, 7]);
+  });
+
+  it('passes VALUES to the callback, not Node objects', () => {
+    const tree = new Tree([1, 2, 3]);
+
+    tree.levelOrderForEach((value) => {
+      expect(typeof value).toBe('number');
+    });
+  });
+
+  it('visits every value exactly once', () => {
+    const values = [1, 7, 4, 23, 8, 9, 3, 5, 67, 6345, 324];
+    const tree = new Tree(values);
+
+    const visited = [];
+    tree.levelOrderForEach((value) => visited.push(value));
+
+    expect(visited.sort((a, b) => a - b)).toEqual(
+      [...values].sort((a, b) => a - b),
+    );
+  });
+});
