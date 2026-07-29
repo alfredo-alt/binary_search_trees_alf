@@ -236,6 +236,75 @@ class Tree {
       }
     }
   }
+
+  /**
+   * Depth-first traversal in IN-ORDER (left, node, right). For a valid
+   * BST, this happens to visit every value in ascending sorted order --
+   * a nice side effect of the BST property, not something the
+   * traversal itself has to work for.
+   * @param {function(*): void} callback
+   * @throws {Error} if `callback` isn't a function.
+   */
+  inOrderForEach(callback) {
+    if (typeof callback !== 'function') {
+      throw new Error('inOrderForEach() requires a callback function.');
+    }
+
+    const traverse = (node) => {
+      if (!node) return;
+      traverse(node.left);
+      callback(node.data);
+      traverse(node.right);
+    };
+
+    traverse(this.root);
+  }
+
+  /**
+   * Depth-first traversal in PRE-ORDER (node, left, right) -- visits
+   * each node BEFORE its children. Useful for tasks like copying a
+   * tree, since parents are always processed before the children that
+   * depend on them.
+   * @param {function(*): void} callback
+   * @throws {Error} if `callback` isn't a function.
+   */
+  preOrderForEach(callback) {
+    if (typeof callback !== 'function') {
+      throw new Error('preOrderForEach() requires a callback function.');
+    }
+
+    const traverse = (node) => {
+      if (!node) return;
+      callback(node.data);
+      traverse(node.left);
+      traverse(node.right);
+    };
+
+    traverse(this.root);
+  }
+
+  /**
+   * Depth-first traversal in POST-ORDER (left, right, node) -- visits
+   * each node AFTER its children. Useful for tasks like deleting a
+   * tree bottom-up, since children are always processed before the
+   * parent that "owns" them.
+   * @param {function(*): void} callback
+   * @throws {Error} if `callback` isn't a function.
+   */
+  postOrderForEach(callback) {
+    if (typeof callback !== 'function') {
+      throw new Error('postOrderForEach() requires a callback function.');
+    }
+
+    const traverse = (node) => {
+      if (!node) return;
+      traverse(node.left);
+      traverse(node.right);
+      callback(node.data);
+    };
+
+    traverse(this.root);
+  }
 }
 
 export { Node, Tree };

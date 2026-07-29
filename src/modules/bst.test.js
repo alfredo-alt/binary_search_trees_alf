@@ -303,3 +303,114 @@ describe('levelOrderForEach functionality', () => {
     );
   });
 });
+
+describe('inOrderForEach functionality', () => {
+  it('throws an Error when no callback is given', () => {
+    const tree = new Tree([1, 2, 3]);
+    expect(() => tree.inOrderForEach()).toThrow(Error);
+  });
+
+  it('throws an Error when the argument is not a function', () => {
+    const tree = new Tree([1, 2, 3]);
+    expect(() => tree.inOrderForEach('nope')).toThrow(Error);
+  });
+
+  it('does not call the callback on an empty tree', () => {
+    const tree = new Tree([]);
+    const callback = jest.fn();
+    tree.inOrderForEach(callback);
+    expect(callback).not.toHaveBeenCalled();
+  });
+
+  it('visits every value in ascending sorted order (BST property)', () => {
+    const values = [1, 7, 4, 23, 8, 9, 3, 5, 67, 6345, 324];
+    const tree = new Tree(values);
+
+    const visited = [];
+    tree.inOrderForEach((value) => visited.push(value));
+
+    expect(visited).toEqual([...new Set(values)].sort((a, b) => a - b));
+  });
+});
+
+describe('preOrderForEach functionality', () => {
+  it('throws an Error when no callback is given', () => {
+    const tree = new Tree([1, 2, 3]);
+    expect(() => tree.preOrderForEach()).toThrow(Error);
+  });
+
+  it('throws an Error when the argument is not a function', () => {
+    const tree = new Tree([1, 2, 3]);
+    expect(() => tree.preOrderForEach('nope')).toThrow(Error);
+  });
+
+  it('does not call the callback on an empty tree', () => {
+    const tree = new Tree([]);
+    const callback = jest.fn();
+    tree.preOrderForEach(callback);
+    expect(callback).not.toHaveBeenCalled();
+  });
+
+  it('visits node, then left subtree, then right subtree', () => {
+    // Balanced tree from [1..7]: root 4, left subtree {2,1,3}, right subtree {6,5,7}.
+    const tree = new Tree([1, 2, 3, 4, 5, 6, 7]);
+
+    const visited = [];
+    tree.preOrderForEach((value) => visited.push(value));
+
+    expect(visited).toEqual([4, 2, 1, 3, 6, 5, 7]);
+  });
+
+  it('visits every value exactly once', () => {
+    const values = [1, 7, 4, 23, 8, 9, 3, 5, 67, 6345, 324];
+    const tree = new Tree(values);
+
+    const visited = [];
+    tree.preOrderForEach((value) => visited.push(value));
+
+    expect(visited.sort((a, b) => a - b)).toEqual(
+      [...values].sort((a, b) => a - b),
+    );
+  });
+});
+
+describe('postOrderForEach functionality', () => {
+  it('throws an Error when no callback is given', () => {
+    const tree = new Tree([1, 2, 3]);
+    expect(() => tree.postOrderForEach()).toThrow(Error);
+  });
+
+  it('throws an Error when the argument is not a function', () => {
+    const tree = new Tree([1, 2, 3]);
+    expect(() => tree.postOrderForEach('nope')).toThrow(Error);
+  });
+
+  it('does not call the callback on an empty tree', () => {
+    const tree = new Tree([]);
+    const callback = jest.fn();
+    tree.postOrderForEach(callback);
+    expect(callback).not.toHaveBeenCalled();
+  });
+
+  it('visits left subtree, then right subtree, then node', () => {
+    // Balanced tree from [1..7]: root 4, left subtree {2,1,3}, right subtree {6,5,7}.
+    const tree = new Tree([1, 2, 3, 4, 5, 6, 7]);
+
+    const visited = [];
+    tree.postOrderForEach((value) => visited.push(value));
+
+    expect(visited).toEqual([1, 3, 2, 5, 7, 6, 4]);
+  });
+
+  it('visits every value exactly once', () => {
+    const values = [1, 7, 4, 23, 8, 9, 3, 5, 67, 6345, 324];
+    const tree = new Tree(values);
+
+    const visited = [];
+    tree.postOrderForEach((value) => visited.push(value));
+
+    expect(visited.sort((a, b) => a - b)).toEqual(
+      [...values].sort((a, b) => a - b),
+    );
+  });
+});
