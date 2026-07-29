@@ -129,6 +129,76 @@ class Tree {
       }
     }
   }
+
+  /**
+   * Removes the node containing `value` from the tree, preserving the
+   * BST property. Handles three cases, depending on how many children
+   * the target node has:
+   *
+   *  - No children (leaf): just detach it from its parent.
+   *  - One child: the parent adopts that child directly, skipping over
+   *    the removed node.
+   *  - Two children: can't just detach it (both subtrees would need a
+   *    new home). Instead, find the in-order SUCCESSOR -- the smallest
+   *    value in the right subtree (i.e. keep going left from
+   *    `current.right` until there's no more `left`) -- copy its data
+   *    into the node being "deleted", then remove the successor node
+   *    itself from its original spot (which is simple: a successor
+   *    found this way can only ever have a right child, never a left
+   *    one, since we walked left until we couldn't anymore).
+   *
+   * If `value` isn't in the tree, this does nothing.
+   * @param {number} value
+   */
+  deleteItem(value) {
+    let parent = null;
+    let current = this.root;
+
+    // Search for the node to delete, remembering its parent along the
+    // way (needed later to reattach whatever replaces it).
+    while (current && current.data !== value) {
+      parent = current;
+      current = value < current.data ? current.left : current.right;
+    }
+
+    if (!current) {
+      return; // value not found -- nothing to do.
+    }
+
+    if (current.left && current.right) {
+      // Two children: find the in-order successor and its parent.
+      let successorParent = current;
+      let successor = current.right;
+      while (successor.left) {
+        successorParent = successor;
+        successor = successor.left;
+      }
+
+      current.data = successor.data;
+
+      // Detach the successor from its original spot. It has no left
+      // child (we walked left until we couldn't), so its right child
+      // (possibly null) simply takes its place.
+      if (successorParent.left === successor) {
+        successorParent.left = successor.right;
+      } else {
+        successorParent.right = successor.right;
+      }
+      return;
+    }
+
+    // Zero or one child: whatever child exists (or null, if none)
+    // takes the deleted node's place directly.
+    const child = current.left || current.right;
+
+    if (!parent) {
+      this.root = child;
+    } else if (parent.left === current) {
+      parent.left = child;
+    } else {
+      parent.right = child;
+    }
+  }
 }
 
 export { Node, Tree };

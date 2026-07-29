@@ -157,3 +157,100 @@ describe('insert functionality', () => {
     });
   });
 });
+
+describe('deleteItem functionality', () => {
+  // Shared helpers for validating tree shape after deletion.
+  const isValidBst = (node, min = -Infinity, max = Infinity) => {
+    if (node === null) return true;
+    if (node.data <= min || node.data >= max) return false;
+    return (
+      isValidBst(node.left, min, node.data) &&
+      isValidBst(node.right, node.data, max)
+    );
+  };
+
+  const countNodes = (node) =>
+    node === null ? 0 : 1 + countNodes(node.left) + countNodes(node.right);
+
+  it('does nothing when the value is not in the tree', () => {
+    const tree = new Tree([1, 2, 3]);
+    const before = countNodes(tree.root);
+
+    tree.deleteItem(999);
+
+    expect(countNodes(tree.root)).toBe(before);
+    expect(isValidBst(tree.root)).toBe(true);
+  });
+
+  it('does nothing when called on an empty tree', () => {
+    const tree = new Tree([]);
+    tree.deleteItem(5);
+    expect(tree.root).toBeNull();
+  });
+
+  it('deletes a leaf node (no children)', () => {
+    // Balanced tree from [1,2,3,4,5,6,7]: root 4, leaves 1,3,5,7.
+    const tree = new Tree([1, 2, 3, 4, 5, 6, 7]);
+    tree.deleteItem(1);
+
+    expect(tree.includes(1)).toBe(false);
+    [2, 3, 4, 5, 6, 7].forEach((value) => {
+      expect(tree.includes(value)).toBe(true);
+    });
+    expect(isValidBst(tree.root)).toBe(true);
+  });
+
+  it('deletes a node with only one child', () => {
+    // Root 10, left child 5 which has a single left child 3.
+    const tree = new Tree([10, 5, 3]);
+    tree.deleteItem(5);
+
+    expect(tree.includes(5)).toBe(false);
+    expect(tree.includes(10)).toBe(true);
+    expect(tree.includes(3)).toBe(true);
+    // 3 should now hang directly off the root.
+    expect(tree.root.left.data).toBe(3);
+    expect(isValidBst(tree.root)).toBe(true);
+  });
+
+  it('deletes a node with two children using the in-order successor', () => {
+    const tree = new Tree([10, 5, 15, 3, 7, 12, 20]);
+    tree.deleteItem(5); // has two children: 3 and 7
+
+    expect(tree.includes(5)).toBe(false);
+    [3, 7, 10, 12, 15, 20].forEach((value) => {
+      expect(tree.includes(value)).toBe(true);
+    });
+    expect(isValidBst(tree.root)).toBe(true);
+  });
+
+  it('deletes the root when it has two children', () => {
+    const tree = new Tree([10, 5, 15, 3, 7, 12, 20]);
+    tree.deleteItem(10);
+
+    expect(tree.includes(10)).toBe(false);
+    [3, 5, 7, 12, 15, 20].forEach((value) => {
+      expect(tree.includes(value)).toBe(true);
+    });
+    expect(isValidBst(tree.root)).toBe(true);
+  });
+
+  it('deletes the root when the tree has only one node', () => {
+    const tree = new Tree([42]);
+    tree.deleteItem(42);
+    expect(tree.root).toBeNull();
+  });
+
+  it('keeps the tree valid after deleting every value one by one', () => {
+    const values = [1, 7, 4, 23, 8, 9, 3, 5, 67, 6345, 324];
+    const tree = new Tree(values);
+
+    values.forEach((value) => {
+      tree.deleteItem(value);
+      expect(isValidBst(tree.root)).toBe(true);
+      expect(tree.includes(value)).toBe(false);
+    });
+
+    expect(tree.root).toBeNull();
+  });
+});
