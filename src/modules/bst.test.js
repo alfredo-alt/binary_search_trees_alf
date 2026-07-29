@@ -414,3 +414,47 @@ describe('postOrderForEach functionality', () => {
     );
   });
 });
+
+describe('height functionality', () => {
+  it('returns undefined for a value not in the tree', () => {
+    const tree = new Tree([1, 2, 3]);
+    expect(tree.height(999)).toBeUndefined();
+  });
+
+  it('returns undefined when called on an empty tree', () => {
+    const tree = new Tree([]);
+    expect(tree.height(5)).toBeUndefined();
+  });
+
+  it('returns 0 for a leaf node', () => {
+    // Balanced tree from [1..7]: root 4, leaves 1, 3, 5, 7.
+    const tree = new Tree([1, 2, 3, 4, 5, 6, 7]);
+    expect(tree.height(1)).toBe(0);
+    expect(tree.height(7)).toBe(0);
+  });
+
+  it('returns the correct height for an internal node', () => {
+    // Balanced tree from [1..7]: root 4 (height 2), 2 and 6 (height 1).
+    const tree = new Tree([1, 2, 3, 4, 5, 6, 7]);
+    expect(tree.height(2)).toBe(1);
+    expect(tree.height(6)).toBe(1);
+  });
+
+  it('returns the height of the whole tree when called on the root', () => {
+    const tree = new Tree([1, 2, 3, 4, 5, 6, 7]);
+    expect(tree.height(4)).toBe(2);
+  });
+
+  it('returns a taller height for an unbalanced single-branch chain', () => {
+    // Inserting in increasing order into a single-node tree creates a
+    // straight chain to the right: 1 -> 2 -> 3 -> 4 -> 5 (height 4).
+    const tree = new Tree([1]);
+    tree.insert(2);
+    tree.insert(3);
+    tree.insert(4);
+    tree.insert(5);
+
+    expect(tree.height(1)).toBe(4);
+    expect(tree.height(5)).toBe(0);
+  });
+});

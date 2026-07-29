@@ -68,24 +68,32 @@ class Tree {
   }
 
   /**
-   * Checks whether `value` exists anywhere in the tree, by walking down
-   * from the root -- at each node, the BST property tells us which
-   * single branch could possibly contain it, so we never need to check
-   * the whole tree (O(log n) for a balanced tree, not O(n)).
+   * Walks down from the root following the BST property (same idea
+   * used by includes()/insert()/deleteItem()) to find the actual Node
+   * object matching `value`, not just whether it exists.
    * @param {number} value
-   * @returns {boolean} true if `value` is found, false otherwise.
+   * @returns {Node|null} the matching node, or null if not found.
    */
-  includes(value) {
+  #findNode(value) {
     let current = this.root;
 
     while (current) {
       if (value === current.data) {
-        return true;
+        return current;
       }
       current = value < current.data ? current.left : current.right;
     }
 
-    return false;
+    return null;
+  }
+
+  /**
+   * Checks whether `value` exists anywhere in the tree.
+   * @param {number} value
+   * @returns {boolean} true if `value` is found, false otherwise.
+   */
+  includes(value) {
+    return this.#findNode(value) !== null;
   }
 
   /**
@@ -304,6 +312,36 @@ class Tree {
     };
 
     traverse(this.root);
+  }
+
+  /**
+   * Height is the number of EDGES in the longest path from a node down
+   * to a leaf. A leaf itself has height 0 (no edges needed to reach a
+   * leaf from itself). Computed recursively: a node's height is
+   * 1 + the taller of its two children's heights, where a missing
+   * child (null) contributes -1 -- that's what makes an actual leaf
+   * (both children null) come out to 1 + max(-1, -1) = 0.
+   * @param {number} value
+   * @returns {number|undefined} the height of the node containing
+   * `value`, or `undefined` if `value` isn't in the tree.
+   */
+  height(value) {
+    const node = this.#findNode(value);
+    if (!node) {
+      return undefined;
+    }
+
+    const calculateHeight = (current) => {
+      if (!current) {
+        return -1;
+      }
+      return (
+        1 +
+        Math.max(calculateHeight(current.left), calculateHeight(current.right))
+      );
+    };
+
+    return calculateHeight(node);
   }
 }
 
