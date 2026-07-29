@@ -343,6 +343,29 @@ class Tree {
 
     return calculateHeight(node);
   }
+
+  /**
+   * Depth is the number of EDGES from the root down to a node. The root
+   * itself has depth 0 (no edges needed to reach itself). Computed by
+   * walking down from the root, following the BST property, and counting
+   * how many edges are traversed until the target node is found.
+   * @param {number} value
+   * @returns {number|undefined} the depth of the node containing `value`, or `undefined` if `value` isn't in the tree.
+   */
+  depth(value) {
+    let depth = 0;
+    let current = this.root;
+
+    while (current) {
+      if (value === current.data) {
+        return depth;
+      }
+      current = value < current.data ? current.left : current.right;
+      depth++;
+    }
+
+    return undefined;
+  }
 }
 
 export { Node, Tree };
