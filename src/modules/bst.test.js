@@ -542,3 +542,46 @@ describe('isBalanced functionality', () => {
     expect(tree.isBalanced()).toBe(false);
   });
 });
+
+describe('rebalance functionality', () => {
+  it('turns an unbalanced chain (from repeated insert()) back into a balanced tree', () => {
+    const tree = new Tree([1]);
+    tree.insert(2);
+    tree.insert(3);
+    tree.insert(4);
+    tree.insert(5);
+    expect(tree.isBalanced()).toBe(false);
+
+    tree.rebalance();
+
+    expect(tree.isBalanced()).toBe(true);
+  });
+
+  it('keeps every value intact after rebalancing (nothing lost, nothing added)', () => {
+    const tree = new Tree([1]);
+    [2, 3, 4, 5, 6, 7, 8].forEach((value) => tree.insert(value));
+
+    const before = [];
+    tree.inOrderForEach((value) => before.push(value));
+
+    tree.rebalance();
+
+    const after = [];
+    tree.inOrderForEach((value) => after.push(value));
+
+    expect(after).toEqual(before);
+  });
+
+  it('does nothing harmful when called on an already-balanced tree', () => {
+    const tree = new Tree([1, 7, 4, 23, 8, 9, 3, 5, 67, 6345, 324]);
+    tree.rebalance();
+    expect(tree.isBalanced()).toBe(true);
+  });
+
+  it('does nothing harmful when called on an empty tree', () => {
+    const tree = new Tree([]);
+    tree.rebalance();
+    expect(tree.root).toBeNull();
+    expect(tree.isBalanced()).toBe(true);
+  });
+});

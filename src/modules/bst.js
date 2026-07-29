@@ -407,6 +407,20 @@ class Tree {
 
     return checkHeight(this.root) !== null;
   }
+
+  /**
+   * Rebalances the tree from its CURRENT contents (not the original
+   * input array -- the tree may have been mutated many times since
+   * then via insert()/deleteItem()). Collects every value with
+   * inOrderForEach(), then rebuilds from scratch with #buildTree(),
+   * which already sorts + dedupes + balances -- exactly the same
+   * process used when the tree was first constructed.
+   */
+  rebalance() {
+    const currentValues = [];
+    this.inOrderForEach((value) => currentValues.push(value));
+    this.root = this.#buildTree(currentValues);
+  }
 }
 
 export { Node, Tree };
